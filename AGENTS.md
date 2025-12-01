@@ -34,3 +34,10 @@
 - Phase 2: add packages, case studies, FAQ, calendar.
 - Phase 3: intake branching, localization hooks, analytics/UTM helpers.
 - Phase 4: A/B hero, automate lead logging/confirmations, publish export.
+
+## Codex Cloud Workflow
+- Environment: Node >=20 with pnpm; set env vars per `.env.example` via platform secrets (THESYS_API_KEY, GOOGLE_API_KEY, GOOGLE_CX, GEMINI_API_KEY, CHAT_API_KEY, MINIMAX_API_KEY, WAVESPEED_API_KEY, DATABASE_URL if using Postgres).
+- Install deps: `pnpm install`; dev server: `pnpm dev`; production check: `pnpm build` then `pnpm start`.
+- Tests: `pnpm dlx tsx tests/*.test.ts` (until a package script is added).
+- Auth for git is stored in `~/.git-credentials` (token-based); avoid committing secrets.
+- For Postgres, set `MESSAGE_STORE_DRIVER=postgres` and `DATABASE_SSL=false` if required by the cloud runtime; otherwise default memory store.

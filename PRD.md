@@ -24,6 +24,7 @@
 - Media APIs: endpoints for image (Minimax) and video (Wavespeed) generation; Gemini for prompt assist/upscales; rate-limit and timeout guards; signed URL/base64 responses.
 - Chat: `/api/chat` remains modular; add tools for media generation/localization within `src/app/api/chat/tools`; system prompt prepended; auth via `CHAT_API_KEY`; model configurable via `C1_MODEL`.
 - Storage: message store abstraction with TTL (`MESSAGE_TTL_MS`); drivers for memory (default) and optional Postgres (`MESSAGE_STORE_DRIVER`, `DATABASE_URL`).
+- Codex Cloud: run pnpm (Node >=20); set env secrets (`THESYS_API_KEY`, `GOOGLE_API_KEY`, `GOOGLE_CX`, `GEMINI_API_KEY`, `CHAT_API_KEY`, `MINIMAX_API_KEY`, `WAVESPEED_API_KEY`, `DATABASE_URL` if Postgres). Build check with `pnpm build`; tests via `pnpm dlx tsx tests/*.test.ts` until scripts are added.
 
 ## 5. Non-Functional
 - Performance: Lighthouse >85 mobile; fast LCP; optimized embeds.
