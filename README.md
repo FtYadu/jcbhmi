@@ -8,50 +8,41 @@ Template repository for a generative UI chat client, powered by [C1 by Thesys](h
 
 ### Setup
 
-1. Install dependencies:
-
+1) Install dependencies
    ```bash
-   pnpm i
+   pnpm install
    ```
 
-2. Set up environment variables by copying `.env.example` to `.env`:
-
+2) Copy env template and set secrets (use Codex cloud secrets or local .env)
    ```bash
    cp .env.example .env
    ```
+   Required keys:
+   - `THESYS_API_KEY`
+   - `GOOGLE_API_KEY`, `GOOGLE_CX`
+   - `GEMINI_API_KEY`
+   - `CHAT_API_KEY` (for `/api/chat` auth)
+   - Optional media: `MINIMAX_API_KEY`, `WAVESPEED_API_KEY`
+   - Optional storage: `DATABASE_URL`, `MESSAGE_STORE_DRIVER=postgres`
 
-3. Add your API keys to the `.env` file:
-
+3) Run dev server
+   ```bash
+   pnpm dev
    ```
-   THESYS_API_KEY=[your_thesys_api_key]
-   GOOGLE_API_KEY=[your_google_api_key]
-   GOOGLE_CX=[your_google_custom_search_id]
-   GEMINI_API_KEY=[your_gemini_api_key]
-   ```
+   Open http://localhost:3000
 
-   Generate an API Key by logging into https://chat.thesys.dev/console/keys
+### Production / Codex Cloud
+- Build: `pnpm build`, then `pnpm start`
+- Set env secrets in the cloud runtime (same keys as above); `C1_MODEL` can override the default model.
+- Message store: default memory; switch to Postgres with `MESSAGE_STORE_DRIVER=postgres` and `DATABASE_URL` (set `DATABASE_SSL=false` if your host requires).
 
-   Google Keys for image & web search. Read more about generating these keys here: https://developers.google.com/custom-search/v1/introduction
-
-   Gemini for summarization. Generate a key at https://aistudio.google.com/apikey
-
-### Development
-
-Run the development server:
-
-```bash
-pnpm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+### Tests
+- Minimal `node:test` specs live in `tests/`; run with a TS-aware runner:
+  ```bash
+  pnpm dlx tsx tests/*.test.ts
+  ```
+  (Add a package script if desired.)
 
 ## Learn More
-
-To learn more about Thesys C1, take a look at the [C1 Documentation](https://docs.thesys.dev) - learn about Thesys C1.
-
-## One-Click Deploy with Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](<https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthesysdev%2Ftemplate-c1-next&env=THESYS_API_KEY&envDescription=Thesys%20Generative%20UI%20API%20key%20can%20be%20found%20in%20the%20Thesys%20console&envLink=https%3A%2F%2Fchat.thesys.dev%2Fconsole%2Fkeys&demo-title=C1%20Generative%20UI%20API&demo-description=C1%20Generative%20UI%20API%20by%20Thesys%20is%20designed%20to%20create%20dynamic%20and%20intelligent%20user%20interfaces.%20It%20leverages%20large%20language%20models%20(LLMs)%20to%20generate%20UI%20components%20in%20real-time%2C%20adapting%20to%20user%20input%20and%20context.%20Developers%20can%20integrate%20C1%20into%20their%20applications%20to%20enhance%20user%20engagement%20with%20visually%20rich%20and%20responsive%20interfaces.&demo-url=https%3A%2F%2Fchat.thesys.dev&demo-image=https%3A%2F%2Fgithub.com%2FCharlesCreativeContent%2FmyImages%2Fblob%2Fmain%2Fimages%2FC1Hero.png%3Fraw%3Dtrue>)
-# jcbhmi
-# jcbhmi
-# jcbhmi
+- Docs: [C1 Documentation](https://docs.thesys.dev)
+- Internal guides: see `AGENTS.md` (dev guidelines) and `PRD.md` (full scope/phases).
