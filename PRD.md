@@ -22,7 +22,8 @@
 - Analytics: GA4 + Meta pixel; UTM helper for outbound links; weekly export (CSV/Sheets).
 - Automation: Formspree payload → Sheet + email confirmation; folder template link for delivery.
 - Media APIs: endpoints for image (Minimax) and video (Wavespeed) generation; Gemini for prompt assist/upscales; rate-limit and timeout guards; signed URL/base64 responses.
-- Chat: `/api/chat` remains modular; add tools for media generation and localization within `src/app/api/chat/tools`.
+- Chat: `/api/chat` remains modular; add tools for media generation/localization within `src/app/api/chat/tools`; system prompt prepended; auth via `CHAT_API_KEY`; model configurable via `C1_MODEL`.
+- Storage: message store abstraction with TTL (`MESSAGE_TTL_MS`); drivers for memory (default) and optional Postgres (`MESSAGE_STORE_DRIVER`, `DATABASE_URL`).
 
 ## 5. Non-Functional
 - Performance: Lighthouse >85 mobile; fast LCP; optimized embeds.

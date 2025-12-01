@@ -1,53 +1,36 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
-- Next.js app in `src/app`; `page.tsx` renders chat; `layout.tsx` applies globals.
-- Chat backend in `src/app/api/chat` with helpers in `services`, `tools`, `types`, `systemPrompts.ts`.
-- Styling: `globals.css` + `*.module.scss`; themes in `src/theme.ts`.
-- Assets in `public/`; root configs: `next.config.ts`, `tsconfig.json`, `eslint.config.mjs`, `postcss.config.mjs`.
+## Structure
+- Next.js app in `src/app`; `page.tsx` renders chat, `layout.tsx` wires globals; API logic in `src/app/api/chat` (`services`, `tools`, `types`, `systemPrompts.ts`); themes in `src/theme.ts`; assets in `public/`.
 
-## Build, Test, and Development Commands
-- `pnpm install` (Node >= 20.9) — install deps.
-- `pnpm dev` — dev server (Turbopack).
-- `pnpm build` / `pnpm start` — prod build and serve.
-- `pnpm lint` — lint rules.
-- `pnpm format:fix` — Prettier (Tailwind/SCSS).
+## Commands
+- `pnpm install` (Node >=20), `pnpm dev`, `pnpm build`/`pnpm start`, `pnpm lint`, `pnpm format:fix`.
 
-## Coding Style & Naming Conventions
-- TypeScript-first; functional components/hooks; keep components small.
-- Filenames: components `PascalCase.tsx`, utilities `camelCase.ts`; CSS modules `Component.module.scss`.
-- Formatting: 2-space indent, trailing commas, double quotes per Prettier; prefer explicit return types for API handlers.
-- Imports: favor `@/` absolute paths; group externals above internals.
+## Style
+- TypeScript + hooks; keep components small. Filenames: `PascalCase.tsx` components, `camelCase.ts` utils, `Component.module.scss` styles. 2-space indent, trailing commas, double quotes; use `@/` imports.
 
-## Testing Guidelines
-- No runner yet; if adding tests, colocate `*.test.ts`/`*.test.tsx` or module `__tests__`.
-- Target `src/app/api/chat/services` with unit tests; hit API routes via `fetch` for integration checks.
-- Sanity-check `/api/chat` locally and confirm UI renders with a valid `.env`.
+## Testing
+- Minimal `node:test` specs live in `tests/`; colocate new tests near code. Focus on services/tools and sanity-check `/api/chat` with a valid `.env`. Run with a TS-aware runner (e.g., `pnpm dlx tsx tests/*.test.ts`) until a test script lands.
 
-## Commit & Pull Request Guidelines
-- Commits: short, imperative subjects (<=72 chars); group related changes per commit.
-- PRs: concise summary, linked issue/ticket, screenshots/GIFs for UI, and notes on env/migration changes. Mention testing (dev server, lint, tests).
-- Do not commit `.env*` files or keys; rely on `.env.example`.
-
-## Security & Configuration Tips
-- Copy `.env.example` to `.env`; set `THESYS_API_KEY`, `GOOGLE_API_KEY`, `GOOGLE_CX`, `GEMINI_API_KEY` before `pnpm dev`.
-- Review third-party calls in `src/app/api/chat/tools` and `services`; scrub responses.
-- For database/auth, keep Neon/Stack keys in `.env` (`NEXT_PUBLIC_STACK_PROJECT_ID`, `NEXT_PUBLIC_STACK_PUBLISHABLE_CLIENT_KEY`, `STACK_SECRET_SERVER_KEY`, `DATABASE_URL`); never hardcode.
+## Security & Config
+- Copy `.env.example` → `.env`; set `THESYS_API_KEY`, `GOOGLE_API_KEY`, `GOOGLE_CX`, `GEMINI_API_KEY`. Keep Neon/Stack/Minimax/Wavespeed/Gemini keys in env only; never commit secrets.
+- `/api/chat` auth via `CHAT_API_KEY` (Bearer or `x-api-key`); model override via `C1_MODEL`. Message store: `MESSAGE_STORE_DRIVER` (`memory` default, `postgres` optional with `DATABASE_URL`), TTL `MESSAGE_TTL_MS`.
 
 ## Design Reference
-- Use the palette, type, and layout cues from the reference image at `https://media.istockphoto.com/id/1982641784/vector/abstract-brochure-design-geometric-business-presentation-layout-creative-background-template.jpg`; ignore the sample content.
+- Follow palette/layout cues from `https://media.istockphoto.com/id/1982641784/vector/abstract-brochure-design-geometric-business-presentation-layout-creative-background-template.jpg`; tokens adjusted in `src/theme.ts`.
 
-## Media Generation (Minimax, Wavespeed, Gemini)
-- Keep provider keys in `.env` (`MINIMAX_API_KEY`, `WAVESPEED_API_KEY`, `GEMINI_API_KEY`).
-- Add typed clients under `src/app/api/chat/services`; expose tools via `src/app/api/chat/tools`; keep schemas in `types`.
-- Flow: validate prompt/size/ratio/duration, call provider (Minimax images, Wavespeed video, Gemini prompts/upscale), stream or buffer, return signed URL/base64, handle timeouts/errors.
+## Tools & Media Gen
+- Tools centralized via `createTools`; system prompt prepended. Web search + image/weather + Minimax/Wavespeed/Gemini tools auto-register when keys exist.
+- Media services in `src/app/api/chat/services` with timeouts (`MINIMAX_TIMEOUT_MS`, `WAVESPEED_TIMEOUT_MS`, `GEMINI_TIMEOUT_MS`); validate prompt/size/ratio/duration; return signed URL/base64 or structured errors.
 
-## Product Requirements
-- Full PRD lives in `PRD.md`; keep it updated when scope changes. Implement in phases (landing → offers → automation/localization → analytics/A/B → media gen).
-- Design against the brochure reference; align tokens in `src/theme.ts` and section layouts with the PRD milestones.
+## Analytics
+- UTM helpers in `src/lib/analytics.ts`; hook GA4/Meta when IDs are provided in layout.
 
-## Implementation Plan (Phased)
-- Phase 1: Publish landing sections (hero, reel embed, CTAs, contact form) and link portfolio/social profiles.
-- Phase 2: Add packages, case studies, FAQ, calendar embed.
-- Phase 3: Expand intake branching, add localization hooks, wire analytics/UTM helpers.
-- Phase 4: Enable A/B hero variants, automate lead logging/confirmations, publish export.
+## Product Requirements (PRD.md)
+- Phases: 1) landing/CTAs/forms; 2) packages/case studies/FAQ/calendar; 3) intake branching + localization + UTM + automation; 4) A/B hero + analytics/export + ad library; 5) media-gen endpoints wired to chat.
+
+## Implementation Plan
+- Phase 1: publish hero + reel embed + CTAs + contact; link portfolio/social.
+- Phase 2: add packages, case studies, FAQ, calendar.
+- Phase 3: intake branching, localization hooks, analytics/UTM helpers.
+- Phase 4: A/B hero, automate lead logging/confirmations, publish export.
