@@ -7,7 +7,8 @@ export type DBMessage = OpenAI.Chat.ChatCompletionMessageParam & {
 type MessageStoreDriver = "memory" | "postgres";
 
 const TTL_MS = Number(process.env.MESSAGE_TTL_MS ?? 1000 * 60 * 60 * 24); // default 24h
-const DRIVER = (process.env.MESSAGE_STORE_DRIVER as MessageStoreDriver) ?? "memory";
+const DRIVER =
+  (process.env.MESSAGE_STORE_DRIVER as MessageStoreDriver) ?? "memory";
 
 interface MessageStore {
   addMessage: (message: DBMessage) => Promise<void> | void;
@@ -56,16 +57,16 @@ function getMemoryStore(threadId: string): MessageStore {
     getOpenAICompatibleMessageList: (prepend = []) => {
       const messages = record.messages.filter(Boolean);
       return [...prepend, ...messages].map((m) => {
-        const message = { ...m };
+        const message = { ...m } as DBMessage;
         delete message.id;
         return message;
-      });
+      }) as DBMessage[];
     },
   };
 }
 
 type PgPool = {
-  query: (...args: unknown[]) => Promise<{ rows: any[] }>;
+  query: (...args: unknown[]) => Promise<{ rows: Record<string, unknown>[] }>;
 };
 
 let pgPool: PgPool | null = null;
@@ -75,7 +76,14 @@ async function getPostgresPool(): Promise<PgPool | null> {
   if (!process.env.DATABASE_URL) return null;
 
   if (!pgPool) {
-    const pg = await import("pg").catch((error) => {
+    // Load `pg` at runtime only. Wrapping the import hides it from the bundler's
+    // static analysis so the build doesn't require `pg` to be installed unless
+    // the Postgres driver is actually used.
+    const dynamicImport = new Function(
+      "specifier",
+      "return import(specifier);",
+    ) as (specifier: string) => Promise<typeof import("pg")>;
+    const pg = await dynamicImport("pg").catch((error) => {
       console.warn(
         "Postgres driver not available; falling back to memory store.",
         error,
@@ -85,7 +93,9 @@ async function getPostgresPool(): Promise<PgPool | null> {
 
     if (!pg) return null;
 
-    const { Pool } = pg as unknown as { Pool: new (...args: any[]) => PgPool };
+    const { Pool } = pg as unknown as {
+      Pool: new (...args: unknown[]) => PgPool;
+    };
     pgPool = new Pool({
       connectionString: process.env.DATABASE_URL,
       ssl:
@@ -145,10 +155,10 @@ function getPostgresStore(threadId: string): MessageStore {
     getOpenAICompatibleMessageList: async (prepend = []) => {
       const messages = await getPostgresStore(threadId).getMessages();
       return [...prepend, ...messages].map((m) => {
-        const message = { ...m };
+        const message = { ...m } as DBMessage;
         delete message.id;
         return message;
-      });
+      }) as DBMessage[];
     },
   };
 }

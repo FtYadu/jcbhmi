@@ -73,7 +73,12 @@ export async function generateWavespeedVideo(
       };
     }
 
-    const data = (await response.json()) as any;
+    const data = (await response.json()) as {
+      videoUrl?: string;
+      url?: string;
+      statusUrl?: string;
+      status?: string;
+    };
     return {
       videoUrl: data?.videoUrl ?? data?.url,
       statusUrl: data?.statusUrl ?? data?.status,

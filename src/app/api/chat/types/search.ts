@@ -85,7 +85,7 @@ export interface BaseGoogleSearchResponse<T> {
 }
 
 // Web search specific request
-export interface GoogleWebSearchRequest extends BaseGoogleSearchRequest {}
+export type GoogleWebSearchRequest = BaseGoogleSearchRequest;
 
 // Image search specific request
 export interface GoogleImageSearchRequest extends BaseGoogleSearchRequest {
