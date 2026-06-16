@@ -5,10 +5,19 @@ import GoogleImages from "google-images";
 import type { JSONSchema } from "openai/lib/jsonschema.mjs";
 import { createToolErrorMessage } from "./utils/toolErrorHandler";
 
-const client = new GoogleImages(
-  process.env.GOOGLE_CX_KEY!,
-  process.env.GOOGLE_API_KEY!,
-);
+let client: GoogleImages | null = null;
+
+// Instantiate lazily so importing this module doesn't require the Google
+// Custom Search env vars (the client constructor throws when they're missing).
+function getClient(): GoogleImages {
+  if (!client) {
+    client = new GoogleImages(
+      process.env.GOOGLE_CX_KEY!,
+      process.env.GOOGLE_API_KEY!,
+    );
+  }
+  return client;
+}
 
 export const googleImageTool: RunnableToolFunctionWithParse<{
   altText: string[];
@@ -38,7 +47,7 @@ export const googleImageTool: RunnableToolFunctionWithParse<{
         const results = await Promise.all(
           altText.map(async (text) => {
             try {
-              const searchResults = await client.search(text, {
+              const searchResults = await getClient().search(text, {
                 size: "medium",
               });
 

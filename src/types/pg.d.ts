@@ -1,10 +1,10 @@
 declare module "pg" {
   export class Pool {
-    constructor(options: any);
+    constructor(options: unknown);
     query: (
       queryText: string,
-      values?: any[],
-    ) => Promise<{ rows: any[] }>;
+      values?: unknown[],
+    ) => Promise<{ rows: Record<string, unknown>[] }>;
     end?: () => Promise<void>;
   }
 }

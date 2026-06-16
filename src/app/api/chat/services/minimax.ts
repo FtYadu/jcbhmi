@@ -2,8 +2,7 @@ import { createToolErrorMessage } from "../tools/utils/toolErrorHandler";
 
 const MINIMAX_API_KEY = process.env.MINIMAX_API_KEY;
 const MINIMAX_BASE_URL =
-  process.env.MINIMAX_BASE_URL ??
-  "https://api.minimax.chat/v1/text_to_image";
+  process.env.MINIMAX_BASE_URL ?? "https://api.minimax.chat/v1/text_to_image";
 const MINIMAX_TIMEOUT_MS = Number(process.env.MINIMAX_TIMEOUT_MS ?? 20000);
 
 export type MinimaxImageRequest = {
@@ -76,8 +75,14 @@ export async function generateMinimaxImage(
       };
     }
 
-    const data = (await response.json()) as any;
-    const imageUrl = data?.data?.[0]?.url ?? data?.imageUrl ?? data?.output?.[0];
+    const data = (await response.json()) as {
+      data?: Array<{ url?: string; b64_json?: string }>;
+      imageUrl?: string;
+      base64?: string;
+      output?: string[];
+    };
+    const imageUrl =
+      data?.data?.[0]?.url ?? data?.imageUrl ?? data?.output?.[0];
     const base64 = data?.data?.[0]?.b64_json ?? data?.base64;
 
     return { imageUrl, base64, raw: data };

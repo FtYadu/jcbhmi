@@ -24,6 +24,12 @@ Template repository for a generative UI chat client, powered by [C1 by Thesys](h
    - `CHAT_API_KEY` (for `/api/chat` auth)
    - Optional media: `MINIMAX_API_KEY`, `WAVESPEED_API_KEY`
    - Optional storage: `DATABASE_URL`, `MESSAGE_STORE_DRIVER=postgres`
+   - Landing page (public, `NEXT_PUBLIC_*`): `BRAND_NAME`, `SITE_URL`, `WHATSAPP_NUMBER`, `BOOKING_URL`, `FORMSPREE_ID`, `YOUTUBE_REEL_ID`, and social URLs. Content/links are centralized in `src/config/site.ts`.
+
+## Routes
+- `/` — marketing landing page (hero, value props, showreel, portfolio, contact form, CTAs).
+- `/chat` — the C1 generative-UI chat assistant.
+- `/api/chat` — streaming chat API (auth via `CHAT_API_KEY`).
 
 3) Run dev server
    ```bash

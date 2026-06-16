@@ -21,7 +21,10 @@ export type GeminiPromptResponse = {
 async function withTimeout<T>(promise: Promise<T>, timeoutMs: number) {
   let timeoutId: NodeJS.Timeout;
   const timeoutPromise = new Promise<never>((_, reject) => {
-    timeoutId = setTimeout(() => reject(new Error("Timeout exceeded")), timeoutMs);
+    timeoutId = setTimeout(
+      () => reject(new Error("Timeout exceeded")),
+      timeoutMs,
+    );
   });
 
   try {
@@ -35,7 +38,10 @@ export async function refinePromptWithGemini(
   params: GeminiPromptRequest,
 ): Promise<GeminiPromptResponse> {
   if (!ai) {
-    return { error: "GEMINI_API_KEY is not configured." };
+    return {
+      error: "GEMINI_API_KEY is not configured.",
+      prompt: params.prompt,
+    };
   }
 
   const prompt = `Rewrite this prompt for media generation. Keep it concise, vivid, and executable. 
@@ -52,7 +58,6 @@ Prompt: ${params.prompt}`;
       GEMINI_TIMEOUT_MS,
     );
 
-    // @ts-expect-error types from SDK
     const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
     return { prompt: text?.trim() || params.prompt };
   } catch (error) {

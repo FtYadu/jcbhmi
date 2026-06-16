@@ -11,13 +11,14 @@ import { geminiPromptTool } from "./tools/geminiPrompt";
 
 type Tool =
   | RunnableToolFunctionWithoutParse
-  | RunnableToolFunctionWithParse<Record<string, unknown>>;
+  // Tools declare their own parsed-argument shapes; `any` keeps the union
+  // assignable across those differing shapes (generic parameter is invariant).
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  | RunnableToolFunctionWithParse<any>;
 
-export const createTools = (
-  options?: {
-    writeProgress?: (progress: { title: string; content: string }) => void;
-  },
-): Tool[] => {
+export const createTools = (options?: {
+  writeProgress?: (progress: { title: string; content: string }) => void;
+}): Tool[] => {
   const writeProgress =
     options?.writeProgress ??
     (() => {
